@@ -181,7 +181,11 @@ func resourcePagerDutyServiceDependencyDisassociate(d *schema.ResourceData, meta
 	// listServiceRelationships by calling get dependencies using the serviceDependency.DependentService.ID
 	retryErr := resource.Retry(5*time.Minute, func() *resource.RetryError {
 		if dependencies, _, err := client.ServiceDependencies.GetServiceDependenciesForType(dependency.DependentService.ID, dependency.DependentService.Type); err != nil {
-			if isErrCode(err, 404) || isErrCode(err, 500) || isErrCode(err, 429) {
+			if isErrCode(err, 429) {
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(err)
+			}
+			if isErrCode(err, 404) || isErrCode(err, 500) {
 				return resource.RetryableError(err)
 			}
 			return resource.NonRetryableError(err)
@@ -221,7 +225,11 @@ func resourcePagerDutyServiceDependencyDisassociate(d *schema.ResourceData, meta
 	}
 	retryErr = resource.Retry(5*time.Minute, func() *resource.RetryError {
 		if _, _, err = client.ServiceDependencies.DisassociateServiceDependencies(&input); err != nil {
-			if isErrCode(err, 404) || isErrCode(err, 429) {
+			if isErrCode(err, 429) {
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(err)
+			}
+			if isErrCode(err, 404) {
 				return resource.RetryableError(err)
 			}
 			return resource.NonRetryableError(err)
@@ -295,7 +303,11 @@ func findDependencySetState(depID, serviceID, serviceType string, d *schema.Reso
 	time.Sleep(1 * time.Second)
 	retryErr := resource.Retry(5*time.Minute, func() *resource.RetryError {
 		if dependencies, _, err := client.ServiceDependencies.GetServiceDependenciesForType(serviceID, serviceType); err != nil {
-			if isErrCode(err, 404) || isErrCode(err, 500) || isErrCode(err, 429) {
+			if isErrCode(err, 429) {
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(err)
+			}
+			if isErrCode(err, 404) || isErrCode(err, 500) {
 				return resource.RetryableError(err)
 			}
 			return resource.NonRetryableError(err)
