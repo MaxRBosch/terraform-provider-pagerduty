@@ -304,7 +304,7 @@ func findDependencySetState(depID, serviceID, serviceType string, d *schema.Reso
 	retryErr := resource.Retry(5*time.Minute, func() *resource.RetryError {
 		if dependencies, _, err := client.ServiceDependencies.GetServiceDependenciesForType(serviceID, serviceType); err != nil {
 			if isErrCode(err, 429) {
-				time.Sleep(60 * time.Second)
+				time.Sleep(45 * time.Second)
 				return resource.RetryableError(err)
 			}
 			if isErrCode(err, 404) || isErrCode(err, 500) {
