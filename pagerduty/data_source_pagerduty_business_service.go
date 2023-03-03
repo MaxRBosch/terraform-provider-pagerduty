@@ -42,7 +42,7 @@ func dataSourcePagerDutyBusinessServiceRead(d *schema.ResourceData, meta interfa
 		if err != nil {
 			// Delaying retry by 30s as recommended by PagerDuty
 			// https://developer.pagerduty.com/docs/rest-api-v2/rate-limiting/#what-are-possible-workarounds-to-the-events-api-rate-limit
-			time.Sleep(30 * time.Second)
+			time.Sleep(60 * time.Second)
 			return resource.RetryableError(err)
 		}
 
